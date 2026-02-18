@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NYMA Fundraiser — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Outfit',sans-serif;background:#F2F4F8;min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .card{background:#fff;border-radius:20px;padding:36px 32px;max-width:440px;width:100%;margin:20px;box-shadow:0 8px 40px rgba(0,0,0,.08);border:1px solid #DCE3ED}
+    .bar{height:4px;border-radius:2px;background:linear-gradient(90deg,#0D2B5C,#1E4D8C,#2A6CB8,#C8A415,#C0392B);margin-bottom:24px}
+    h1{color:#0D2B5C;font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
+    .sub{color:#7A8A9E;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;text-align:center}
+    label{display:block;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#7A8A9E;margin-bottom:5px}
+    input{width:100%;padding:11px 14px;border:1.5px solid #DCE3ED;border-radius:10px;font-size:15px;font-family:'Outfit',sans-serif;color:#1A2332;outline:none;margin-bottom:18px;transition:border .2s}
+    input:focus{border-color:#2A6CB8}
+    .btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:700;letter-spacing:1.5px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+    .btn-gold{background:#C8A415;color:#fff}.btn-gold:hover{opacity:.9}
+    .btn-navy{background:linear-gradient(135deg,#0D2B5C,#1E4D8C);color:#fff}.btn-navy:hover{opacity:.9;transform:translateY(-1px)}
+    .msg{text-align:center;padding:10px;border-radius:10px;margin-bottom:14px;font-size:13px;font-weight:600}
+    .msg.ok{background:#E8F8EE;color:#27ae60}.msg.err{background:#FFF0EE;color:#C0392B}
+    .cur{background:#F2F4F8;border-radius:12px;padding:12px 14px;margin-bottom:20px;font-size:12px;color:#4A5568;line-height:1.8}
+    .cur strong{color:#0D2B5C}
+    .note{font-size:11px;color:#7A8A9E;text-align:center;margin-top:14px;line-height:1.6}
+    a{color:#7A8A9E;font-size:12px;text-decoration:none}
+    #login-view,#admin-view{display:none}
+    .lock{font-size:28px;text-align:center;margin-bottom:8px}
+    .help{background:#F2F4F8;border-radius:10px;padding:12px;margin-bottom:20px;font-size:12px;color:#4A5568;line-height:1.7}
+    .help code{background:#E8F0FA;padding:2px 6px;border-radius:4px;font-size:11px}
+  </style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div class="card" id="setup-view">
+  <div class="bar"></div>
+  <div class="lock">⚙️</div>
+  <h1>Connect to GitHub</h1>
+  <p class="sub">One-time setup</p>
+  <div class="help">
+    You need a <strong>GitHub Personal Access Token</strong> with <code>repo</code> scope.<br>
+    Go to <a href="https://github.com/settings/tokens/new" target="_blank" style="color:#2A6CB8;text-decoration:underline">GitHub → Settings → Tokens</a> and create one.
+  </div>
+  <label>GitHub Token</label>
+  <input type="password" id="s-token" placeholder="ghp_xxxxxxxxxxxx">
+  <label>Repo Owner (your username)</label>
+  <input type="text" id="s-owner" placeholder="e.g. taimur-nyma">
+  <label>Repo Name</label>
+  <input type="text" id="s-repo" placeholder="e.g. nyma-fundraiser">
+  <div id="setup-msg"></div>
+  <button class="btn btn-gold" onclick="doSetup()">CONNECT</button>
+  <p class="note">Token is stored only in your browser's session.<br>It is never shared or transmitted elsewhere.</p>
+</div>
+
+<!-- LOGIN -->
+<div class="card" id="login-view">
+  <div class="bar"></div>
+  <div class="lock">🔒</div>
+  <h1>Admin Access</h1>
+  <p class="sub">NYMA Fundraiser Control Panel</p>
+  <div id="login-msg"></div>
+  <label>Admin Password</label>
+  <input type="password" id="pass-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+  <button class="btn btn-gold" onclick="doLogin()">UNLOCK</button>
+  <p class="note" style="margin-top:12px"><a href="#" onclick="clearSetup();return false">⚙ Change GitHub settings</a></p>
+</div>
+
+<!-- ADMIN -->
+<div class="card" id="admin-view">
+  <div class="bar"></div>
+  <h1>Update Fundraiser</h1>
+  <p class="sub">Changes go live after GitHub Pages rebuilds (~30s)</p>
+  <div id="status-msg"></div>
+  <div class="cur" id="current-vals">Loading...</div>
+  <label>Target Amount ($)</label>
+  <input type="number" id="f-target">
+  <label>Current Savings ($)</label>
+  <input type="number" id="f-savings">
+  <label>Closing Date</label>
+  <input type="date" id="f-date">
+  <label>Donation URL</label>
+  <input type="text" id="f-url">
+  <button class="btn btn-navy" onclick="doSave()">UPDATE DISPLAY</button>
+  <p style="text-align:center;margin-top:14px">
+    <a href="./">← View Live Display</a> &nbsp;·&nbsp;
+    <a href="#" onclick="clearSetup();return false">⚙ Settings</a>
+  </p>
+</div>
+
+<script>
+let cfg={token:"",owner:"",repo:"",pass:""};
+let fileSha="";
+
+function save(k,v){sessionStorage.setItem("nyma_"+k,v)}
+function load(k){return sessionStorage.getItem("nyma_"+k)||""}
+
+function init(){
+  cfg.token=load("token");cfg.owner=load("owner");cfg.repo=load("repo");cfg.pass=load("pass");
+  if(!cfg.token||!cfg.owner||!cfg.repo){
+    show("setup-view");
+    if(cfg.owner)document.getElementById("s-owner").value=cfg.owner;
+    if(cfg.repo)document.getElementById("s-repo").value=cfg.repo;
+  }else if(!cfg.pass){
+    show("login-view");
+  }else{
+    show("admin-view");loadCurrent();
+  }
+}
+
+function show(id){
+  ["setup-view","login-view","admin-view"].forEach(v=>document.getElementById(v).style.display="none");
+  document.getElementById(id).style.display="block";
+}
+
+function clearSetup(){
+  sessionStorage.clear();
+  cfg={token:"",owner:"",repo:"",pass:""};
+  document.getElementById("s-token").value="";
+  show("setup-view");
+}
+
+async function doSetup(){
+  const token=document.getElementById("s-token").value.trim();
+  const owner=document.getElementById("s-owner").value.trim();
+  const repo=document.getElementById("s-repo").value.trim();
+  if(!token||!owner||!repo){
+    document.getElementById("setup-msg").innerHTML='<div class="msg err">All fields required</div>';return;
+  }
+  try{
+    const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json`,{
+      headers:{"Authorization":"Bearer "+token,"Accept":"application/vnd.github.v3+json"}
+    });
+    if(!r.ok)throw new Error(r.status===404?"Repo or data.json not found":r.status===401?"Bad token":"Error "+r.status);
+    cfg.token=token;cfg.owner=owner;cfg.repo=repo;
+    save("token",token);save("owner",owner);save("repo",repo);
+    show("login-view");
+  }catch(e){
+    document.getElementById("setup-msg").innerHTML='<div class="msg err">'+e.message+'</div>';
+  }
+}
+
+function doLogin(){
+  const p=document.getElementById("pass-input").value;
+  // Simple client-side password — the real security is the GitHub token
+  if(p==="nyma2026"){
+    cfg.pass=p;save("pass",p);
+    show("admin-view");loadCurrent();
+  }else{
+    document.getElementById("login-msg").innerHTML='<div class="msg err">Incorrect password</div>';
+  }
+}
+
+async function ghGet(){
+  const r=await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.json`,{
+    headers:{"Authorization":"Bearer "+cfg.token,"Accept":"application/vnd.github.v3+json"},
+    cache:"no-store"
+  });
+  if(!r.ok)throw new Error("Failed to fetch: "+r.status);
+  const j=await r.json();
+  fileSha=j.sha;
+  return JSON.parse(atob(j.content));
+}
+
+async function ghPut(data){
+  const content=btoa(JSON.stringify(data,null,2)+"\n");
+  const r=await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.json`,{
+    method:"PUT",
+    headers:{"Authorization":"Bearer "+cfg.token,"Accept":"application/vnd.github.v3+json","Content-Type":"application/json"},
+    body:JSON.stringify({message:"Update fundraiser data",content:content,sha:fileSha})
+  });
+  if(!r.ok){const e=await r.json();throw new Error(e.message||"Failed");}
+  const j=await r.json();
+  fileSha=j.content.sha;
+}
+
+async function loadCurrent(){
+  try{
+    const d=await ghGet();
+    document.getElementById("f-target").value=d.target;
+    document.getElementById("f-savings").value=d.savings;
+    document.getElementById("f-date").value=d.closingDate;
+    document.getElementById("f-url").value=d.donateUrl;
+    const pct=d.target>0?((d.savings/d.target)*100).toFixed(1):0;
+    const rem=Math.max(d.target-d.savings,0);
+    document.getElementById("current-vals").innerHTML=
+      `<strong>Live values:</strong><br>`+
+      `Target: <strong>$${d.target.toLocaleString()}</strong> · Saved: <strong>$${d.savings.toLocaleString()}</strong> (${pct}%)<br>`+
+      `Remaining: <strong>$${rem.toLocaleString()}</strong> · Closing: <strong>${d.closingDate}</strong>`;
+  }catch(e){
+    document.getElementById("current-vals").innerHTML='<span style="color:#C0392B">Error loading: '+e.message+'</span>';
+  }
+}
+
+async function doSave(){
+  const btn=document.querySelector(".btn-navy");
+  btn.textContent="SAVING...";btn.disabled=true;
+  try{
+    await ghGet(); // refresh sha
+    const data={
+      target:Number(document.getElementById("f-target").value)||0,
+      savings:Number(document.getElementById("f-savings").value)||0,
+      closingDate:document.getElementById("f-date").value,
+      donateUrl:document.getElementById("f-url").value
+    };
+    await ghPut(data);
+    document.getElementById("status-msg").innerHTML='<div class="msg ok">✓ Updated! Display refreshes in ~30 seconds.</div>';
+    loadCurrent();
+    setTimeout(()=>document.getElementById("status-msg").innerHTML="",5000);
+  }catch(e){
+    document.getElementById("status-msg").innerHTML='<div class="msg err">'+e.message+'</div>';
+  }
+  btn.textContent="UPDATE DISPLAY";btn.disabled=false;
+}
+
+init();
+</script>
+</body>
+</html>
