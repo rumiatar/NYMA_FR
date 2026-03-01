@@ -144,10 +144,10 @@ function App(){
                 <div style={{fontSize:30,fontWeight:700,color:C.red,fontFamily:"'Playfair Display',serif"}}>${remaining.toLocaleString()}</div>
               </div>
             </div>
-            <div style={{marginTop:4,padding:"14px 44px",borderRadius:14,textAlign:"center",background:`linear-gradient(135deg,${C.navy},${C.blue})`,boxShadow:`0 6px 24px ${C.navy}33`}}>
+            <a href={donateUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"block",marginTop:4,padding:"14px 44px",borderRadius:14,textAlign:"center",background:`linear-gradient(135deg,${C.navy},${C.blue})`,boxShadow:`0 6px 24px ${C.navy}33`,cursor:"pointer",transition:"transform 0.2s, box-shadow 0.2s"}}>
               <div style={{fontSize:sm?24:38,fontWeight:800,color:C.white,letterSpacing:sm?2:4,fontFamily:"'Playfair Display',serif"}}>DONATE NOW</div>
               <div style={{fontSize:14,color:"rgba(255,255,255,0.6)",marginTop:2,letterSpacing:1.5}}>Every contribution brings us closer</div>
-            </div>
+            </a>
           </div>
 
           {/* RIGHT */}
