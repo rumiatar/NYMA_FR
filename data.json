@@ -1,6 +1,8 @@
 {
-  "target": 2000000,
-  "savings": 1657538,
+  "target": 1600000,
+  "savings": 1103400,
   "closingDate": "2026-04-18",
-  "donateUrl": "https://northyorkma.com/newmasjid"
+  "donateUrl": "https://nyma.ca/donate",
+  "title": "New Masjid Fundraiser",
+  "customText": "\"The believer's shade on the Day of Resurrection will be their charity.\"\n— Musnad Ahmad 17333\n\n\"Charity does not decrease wealth.\"\n— Sahih Muslim 2588"
 }
