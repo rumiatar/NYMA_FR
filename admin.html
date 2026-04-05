@@ -31,7 +31,7 @@
   </style>
 </head>
 <body>
-
+ 
 <!-- SETUP -->
 <div class="card" id="setup-view">
   <div class="bar"></div>
@@ -52,7 +52,7 @@
   <button class="btn btn-gold" onclick="doSetup()">CONNECT</button>
   <p class="note">Token is stored only in your browser's session.<br>It is never shared or transmitted elsewhere.</p>
 </div>
-
+ 
 <!-- LOGIN -->
 <div class="card" id="login-view">
   <div class="bar"></div>
@@ -65,7 +65,7 @@
   <button class="btn btn-gold" onclick="doLogin()">UNLOCK</button>
   <p class="note" style="margin-top:12px"><a href="#" onclick="clearSetup();return false">⚙ Change GitHub settings</a></p>
 </div>
-
+ 
 <!-- ADMIN -->
 <div class="card" id="admin-view">
   <div class="bar"></div>
@@ -81,20 +81,24 @@
   <input type="date" id="f-date">
   <label>Donation URL</label>
   <input type="text" id="f-url">
+  <label>Page Title</label>
+  <input type="text" id="f-title" placeholder="New Masjid Fundraiser">
+  <label>Custom Text (left card — use blank lines to separate paragraphs, start a line with — for references)</label>
+  <textarea id="f-text" rows="6" style="width:100%;padding:11px 14px;border:1.5px solid #DCE3ED;border-radius:10px;font-size:14px;font-family:'Outfit',sans-serif;color:#1A2332;outline:none;margin-bottom:18px;resize:vertical;line-height:1.6" placeholder='"The believer&#39;s shade on the Day of Resurrection will be their charity."&#10;— Musnad Ahmad 17333'></textarea>
   <button class="btn btn-navy" onclick="doSave()">UPDATE DISPLAY</button>
   <p style="text-align:center;margin-top:14px">
     <a href="./">← View Live Display</a> &nbsp;·&nbsp;
     <a href="#" onclick="clearSetup();return false">⚙ Settings</a>
   </p>
 </div>
-
+ 
 <script>
 let cfg={token:"",owner:"",repo:"",pass:""};
 let fileSha="";
-
+ 
 function save(k,v){sessionStorage.setItem("nyma_"+k,v)}
 function load(k){return sessionStorage.getItem("nyma_"+k)||""}
-
+ 
 function init(){
   cfg.token=load("token");cfg.owner=load("owner");cfg.repo=load("repo");cfg.pass=load("pass");
   if(!cfg.token||!cfg.owner||!cfg.repo){
@@ -107,19 +111,19 @@ function init(){
     show("admin-view");loadCurrent();
   }
 }
-
+ 
 function show(id){
   ["setup-view","login-view","admin-view"].forEach(v=>document.getElementById(v).style.display="none");
   document.getElementById(id).style.display="block";
 }
-
+ 
 function clearSetup(){
   sessionStorage.clear();
   cfg={token:"",owner:"",repo:"",pass:""};
   document.getElementById("s-token").value="";
   show("setup-view");
 }
-
+ 
 async function doSetup(){
   const token=document.getElementById("s-token").value.trim();
   const owner=document.getElementById("s-owner").value.trim();
@@ -139,7 +143,7 @@ async function doSetup(){
     document.getElementById("setup-msg").innerHTML='<div class="msg err">'+e.message+'</div>';
   }
 }
-
+ 
 function doLogin(){
   const p=document.getElementById("pass-input").value;
   // Simple client-side password — the real security is the GitHub token
@@ -150,7 +154,7 @@ function doLogin(){
     document.getElementById("login-msg").innerHTML='<div class="msg err">Incorrect password</div>';
   }
 }
-
+ 
 async function ghGet(){
   const r=await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.json`,{
     headers:{"Authorization":"Bearer "+cfg.token,"Accept":"application/vnd.github.v3+json"},
@@ -161,7 +165,7 @@ async function ghGet(){
   fileSha=j.sha;
   return JSON.parse(atob(j.content));
 }
-
+ 
 async function ghPut(data){
   const content=btoa(JSON.stringify(data,null,2)+"\n");
   const r=await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.json`,{
@@ -173,7 +177,7 @@ async function ghPut(data){
   const j=await r.json();
   fileSha=j.content.sha;
 }
-
+ 
 async function loadCurrent(){
   try{
     const d=await ghGet();
@@ -181,17 +185,20 @@ async function loadCurrent(){
     document.getElementById("f-savings").value=d.savings;
     document.getElementById("f-date").value=d.closingDate;
     document.getElementById("f-url").value=d.donateUrl;
+    document.getElementById("f-title").value=d.title||"New Masjid Fundraiser";
+    document.getElementById("f-text").value=d.customText||"";
     const pct=d.target>0?((d.savings/d.target)*100).toFixed(1):0;
     const rem=Math.max(d.target-d.savings,0);
     document.getElementById("current-vals").innerHTML=
       `<strong>Live values:</strong><br>`+
+      `Title: <strong>${d.title||'New Masjid Fundraiser'}</strong><br>`+
       `Target: <strong>$${d.target.toLocaleString()}</strong> · Saved: <strong>$${d.savings.toLocaleString()}</strong> (${pct}%)<br>`+
       `Remaining: <strong>$${rem.toLocaleString()}</strong> · Closing: <strong>${d.closingDate}</strong>`;
   }catch(e){
     document.getElementById("current-vals").innerHTML='<span style="color:#C0392B">Error loading: '+e.message+'</span>';
   }
 }
-
+ 
 async function doSave(){
   const btn=document.querySelector(".btn-navy");
   btn.textContent="SAVING...";btn.disabled=true;
@@ -201,7 +208,9 @@ async function doSave(){
       target:Number(document.getElementById("f-target").value)||0,
       savings:Number(document.getElementById("f-savings").value)||0,
       closingDate:document.getElementById("f-date").value,
-      donateUrl:document.getElementById("f-url").value
+      donateUrl:document.getElementById("f-url").value,
+      title:document.getElementById("f-title").value||"New Masjid Fundraiser",
+      customText:document.getElementById("f-text").value
     };
     await ghPut(data);
     document.getElementById("status-msg").innerHTML='<div class="msg ok">✓ Updated! Display refreshes in ~30 seconds.</div>';
@@ -212,7 +221,7 @@ async function doSave(){
   }
   btn.textContent="UPDATE DISPLAY";btn.disabled=false;
 }
-
+ 
 init();
 </script>
 </body>
