@@ -90,8 +90,8 @@ function App(){
         <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:sm?10:16,marginBottom:6}}>
           <img src={LOGO_B64} alt="NYMA" style={{width:sm?60:100,height:sm?60:100,borderRadius:14,objectFit:"cover",boxShadow:"0 4px 12px rgba(0,0,0,0.1)"}}/>
           <div>
-            <h1 style={{fontSize:sm?22:36,fontWeight:700,margin:0,letterSpacing:1,fontFamily:"'Playfair Display',Georgia,serif",color:C.navy}}>{pageTitle}</h1>
-            <div style={{fontSize:sm?11:15,letterSpacing:sm?2:4,color:C.textLight,marginTop:2,fontWeight:500}}>NORTH YORK MUSLIM ASSOCIATION</div>
+            <h1 style={{fontSize:sm?18:28,fontWeight:700,margin:0,letterSpacing:sm?2:4,fontFamily:"'Outfit',sans-serif",color:C.navy,textTransform:"uppercase"}}>North York Muslim Association</h1>
+            <div style={{fontSize:sm?20:34,fontWeight:700,color:C.blue,marginTop:4,fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:1}}>{pageTitle}</div>
           </div>
         </div>
         <div style={{width:120,height:2,margin:"10px auto 22px",background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>
@@ -116,7 +116,7 @@ function App(){
           {/* LEFT */}
           <div style={{flex:mob?"1 1 auto":"0 0 420px",background:C.white,borderRadius:20,padding:sm?"18px 16px":"24px 28px",boxShadow:"0 4px 24px rgba(0,0,0,0.05)",border:`1px solid ${C.border}`,display:"flex",flexDirection:"column"}}>
             <div style={{textAlign:"center",marginBottom:sm?14:22}}>
-              <div style={{fontSize:sm?12:15,letterSpacing:3,color:C.textLight,textTransform:"uppercase",marginBottom:4}}>Down Payment Target</div>
+              <div style={{fontSize:sm?12:15,letterSpacing:3,color:C.textLight,textTransform:"uppercase",marginBottom:4}}>Target Amount</div>
               <div style={{fontSize:sm?36:58,fontWeight:800,color:C.navy,lineHeight:1,fontFamily:"'Playfair Display',Georgia,serif"}}>${target.toLocaleString()}</div>
             </div>
             <div style={{display:"flex",justifyContent:"space-around",alignItems:"center",marginBottom:sm?10:14}}>
@@ -135,7 +135,7 @@ function App(){
               <span style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:"flex",alignItems:"center",justifyContent:"center",color:"white",fontSize:sm?14:20,fontWeight:800,fontFamily:"'Outfit',sans-serif",letterSpacing:1,textShadow:"0 1px 3px rgba(0,0,0,0.3)"}}>{Math.round(pct)}% FUNDED</span>
             </div>
             <div style={{marginTop:18,padding:"16px",borderRadius:14,textAlign:"center",background:`linear-gradient(135deg,${C.redSoft},#FFF5F3)`,border:`1px solid ${C.red}18`}}>
-              <div style={{fontSize:13,letterSpacing:2.5,color:C.textLight}}>CLOSING DATE</div>
+              <div style={{fontSize:13,letterSpacing:2.5,color:C.textLight}}>TARGET DATE</div>
               <div style={{fontSize:sm?22:28,fontWeight:700,color:C.red,fontFamily:"'Playfair Display',serif"}}>{fmtDate(closingDate)}</div>
               <div style={{display:"inline-block",marginTop:5,padding:"4px 20px",borderRadius:20,background:C.red,color:"white",fontSize:16,fontWeight:700,letterSpacing:1}}>{daysLeft} DAYS LEFT</div>
             </div>
