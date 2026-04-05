@@ -96,6 +96,21 @@ function App(){
         </div>
         <div style={{width:120,height:2,margin:"10px auto 22px",background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>
  
+        {/* Announcement banner */}
+        {customText&&customText.trim()&&(
+          <div style={{background:C.white,borderRadius:16,padding:sm?"16px 18px":"18px 32px",marginBottom:mob?16:24,boxShadow:"0 2px 16px rgba(0,0,0,0.04)",border:`1px solid ${C.border}`,maxWidth:1000,margin:"0 auto "+(mob?16:24)+"px"}}>
+            <div style={{fontSize:sm?14:16,color:C.textDark,lineHeight:1.8,textAlign:"center",fontFamily:"'Outfit',sans-serif"}}>
+              {customText.split("\n\n").map((block,i)=>(
+                <p key={i} style={{margin:i>0?"12px 0 0":0}}>
+                  {block.split("\n").map((line,j)=>(
+                    <span key={j}>{j>0&&<br/>}{line}</span>
+                  ))}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+ 
         <div style={{display:"flex",gap:mob?16:28,alignItems:"stretch",justifyContent:"center",flexWrap:"wrap",flexDirection:mob?"column":"row"}}>
  
           {/* LEFT */}
@@ -116,20 +131,10 @@ function App(){
               </div>
             </div>
             <div style={{height:sm?36:48,background:C.red,borderRadius:24,overflow:"hidden",boxShadow:"inset 0 2px 4px rgba(0,0,0,0.08)",position:"relative"}}>
-              <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${C.blueLight},${C.blue})`,borderRadius:24,transition:"width 1.4s cubic-bezier(0.25,1,0.5,1)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <span style={{color:"white",fontSize:sm?14:20,fontWeight:800,fontFamily:"'Outfit',sans-serif",letterSpacing:1}}>{Math.round(pct)}% FUNDED</span>
-              </div>
+              <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${C.blueLight},${C.blue})`,borderRadius:24,transition:"width 1.4s cubic-bezier(0.25,1,0.5,1)"}}/>
+              <span style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:"flex",alignItems:"center",justifyContent:"center",color:"white",fontSize:sm?14:20,fontWeight:800,fontFamily:"'Outfit',sans-serif",letterSpacing:1,textShadow:"0 1px 3px rgba(0,0,0,0.3)"}}>{Math.round(pct)}% FUNDED</span>
             </div>
-            <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",textAlign:"center",marginTop:14,padding:"16px 16px",background:`linear-gradient(135deg,${C.bluePale},#F0F4FA)`,borderRadius:14,border:`1px solid ${C.border}`}}>
-              {customText.split("\n\n").map((block,i)=>(
-                <div key={i} style={{marginTop:i>0?12:0}}>
-                  {block.split("\n").map((line,j)=>{
-                    const isRef=line.startsWith("\u2014")||line.startsWith("—")||line.startsWith("-");
-                    return <div key={j} style={{fontSize:isRef?(sm?11:13):(sm?14:17),fontStyle:isRef?"normal":"italic",color:isRef?C.gold:C.textMid,lineHeight:1.7,fontFamily:isRef?"'Outfit',sans-serif":"'Playfair Display',Georgia,serif",fontWeight:isRef?600:400,letterSpacing:isRef?1.5:0,marginTop:isRef?4:0}}>{line}</div>;
-                  })}
-                </div>
-              ))}
-            </div>
+            <div style={{flex:1}}/>
             <div style={{marginTop:18,padding:"16px",borderRadius:14,textAlign:"center",background:`linear-gradient(135deg,${C.redSoft},#FFF5F3)`,border:`1px solid ${C.red}18`}}>
               <div style={{fontSize:13,letterSpacing:2.5,color:C.textLight}}>CLOSING DATE</div>
               <div style={{fontSize:sm?22:28,fontWeight:700,color:C.red,fontFamily:"'Playfair Display',serif"}}>{fmtDate(closingDate)}</div>
