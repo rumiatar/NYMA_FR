@@ -134,7 +134,6 @@ function App(){
               <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${C.blueLight},${C.blue})`,borderRadius:24,transition:"width 1.4s cubic-bezier(0.25,1,0.5,1)"}}/>
               <span style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:"flex",alignItems:"center",justifyContent:"center",color:"white",fontSize:sm?14:20,fontWeight:800,fontFamily:"'Outfit',sans-serif",letterSpacing:1,textShadow:"0 1px 3px rgba(0,0,0,0.3)"}}>{Math.round(pct)}% FUNDED</span>
             </div>
-            {!mob&&<div style={{flex:1}}/>}
             <div style={{marginTop:18,padding:"16px",borderRadius:14,textAlign:"center",background:`linear-gradient(135deg,${C.redSoft},#FFF5F3)`,border:`1px solid ${C.red}18`}}>
               <div style={{fontSize:13,letterSpacing:2.5,color:C.textLight}}>CLOSING DATE</div>
               <div style={{fontSize:sm?22:28,fontWeight:700,color:C.red,fontFamily:"'Playfair Display',serif"}}>{fmtDate(closingDate)}</div>
